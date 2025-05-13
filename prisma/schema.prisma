@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+  
+model Auto{
+    id String @id @default(uuid())
+    plateNum String @unique
+    owner String
+    parkPlace ParkPlace @relation(fields: [placeId],references: [name])
+    placeId String @unique
+    timeOcupied DateTime @default(now())
+    User User @relation(fields: [owner], references: [name])
+}
+
+model ParkPlace {
+    id String @id @default(uuid())
+    name String @unique
+    free Boolean @default(true)
+    Auto Auto?
+    DeleteAuto DeletedAuto[]
+
+}
+
+model DeletedAuto{
+    id String @id @default(uuid())
+    plateNum String 
+    owner String
+    parkPlace ParkPlace @relation(fields: [placeId],references: [name])
+    placeId String 
+    timeOcupied DateTime 
+    timeDeleted DateTime @default(now())
+    duration Int
+    payment Int
+    User User @relation(fields: [owner], references: [name])
+    
+}
+
+model User{
+    id String @id @default(uuid())
+    name String @unique
+    Auto Auto[]
+    DeleteAuto DeletedAuto[]
+    duration Int?
+    payment Int?
+}
